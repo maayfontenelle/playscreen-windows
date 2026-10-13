@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project(PlayScreenAudio LANGUAGES CXX)
+add_executable(PlayScreenAudio AudioCapture.cpp)
+target_compile_features(PlayScreenAudio PRIVATE cxx_std_17)
+target_compile_definitions(PlayScreenAudio PRIVATE UNICODE _UNICODE WINVER=0x0A00 _WIN32_WINNT=0x0A00)
+target_link_libraries(PlayScreenAudio PRIVATE mmdevapi ole32)

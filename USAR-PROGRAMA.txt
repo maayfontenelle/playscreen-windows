@@ -1,0 +1,31 @@
+PLAYSCREEN — versão de teste para Windows 11 x64
+
+1. Extraia TODA a pasta recebida. Abra PLAYSCREEN.exe junto dos demais arquivos.
+2. Entre na sala pelo nome, como no site. Para assistir no celular, use o site.
+3. Clique em "Som da guia de vídeo". Uma janela de vídeo separada será aberta.
+4. Cole o link HTTPS do vídeo no campo no topo, clique em Abrir e dê play.
+5. No painel principal, clique em Compartilhar tela e escolha a janela da guia
+   de vídeo do PLAYSCREEN se quiser transmitir o vídeo também. Você também
+   pode transmitir outra janela enquanto envia o áudio da guia de vídeo.
+6. Seus amigos entram na mesma sala no site e tocam em Ativar som.
+7. Use Parar som da guia para encerrar o áudio ou feche a janela de vídeo.
+   Parar a transmissão também encerra o áudio.
+
+A guia de vídeo pertence ao programa; ela não pega o áudio de uma guia que já
+está aberta no Chrome. Abra o link do vídeo nessa janela própria. Ela usa um
+processo separado do painel PLAYSCREEN e do Discord. O código solicita captura
+somente desse processo e dos seus filhos, sem recorrer ao áudio do computador.
+Não abra a conversa do Discord dentro da guia dedicada a vídeo.
+
+ESTADO DESTA ENTREGA
+O código e a receita de compilação foram preparados. O executável precisa ser
+compilado em Windows. A captura nativa, os sites de vídeo, Android e iPhone
+AINDA precisam ser testados em aparelhos reais; não estão certificados como
+funcionando. Conteúdo protegido ou alguns serviços podem bloquear reprodução
+ou captura em um navegador incorporado.
+
+REQUISITOS
+Windows 11 x64 e Microsoft Edge WebView2 Runtime. O pacote de compilação inclui
+o runtime .NET necessário, mas o WebView2 deve estar instalado no computador.
+Não foi implementada configuração de encoder de GPU. O transporte continua
+WebRTC nas mesmas salas Supabase existentes, com as mesmas limitações de rede.
