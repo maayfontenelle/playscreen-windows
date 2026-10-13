@@ -1,0 +1,31 @@
+name: Gerar PLAYSCREEN para Windows
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['app/**', 'native/**', '.github/workflows/windows.yml']
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Compilar captura nativa da guia
+        run: |
+          cmake -S native -B native/build -A x64
+          cmake --build native/build --config Release
+      - name: Gerar aplicativo
+        run: |
+          dotnet publish app/PlayScreen.csproj -c Release -r win-x64 --self-contained true -o output
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item native/build/Release/PlayScreenAudio.exe output/
+          Copy-Item USAR-PROGRAMA.txt output/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PLAYSCREEN-Windows11-x64-teste
+          path: output/
+          if-no-files-found: error
