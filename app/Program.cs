@@ -81,6 +81,11 @@ sealed class MainWindow : Form {
         captureCancellation=new CancellationTokenSource();var token=captureCancellation.Token;
         capture=processCapture;
         if(!processCapture.Start())throw new Exception("Não foi possível iniciar a captura da guia.");
+        string? ready;
+        try{ready=await processCapture.StandardError.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(12));}
+        catch{StopCapture();throw new Exception("A captura da guia não iniciou. Confira a instalação do WebView2 e tente novamente.");}
+        if(ready!="READY"){StopCapture();throw new Exception("Não foi possível capturar o som da guia. "+ready);}
+        if(current!=sequence)return;
         Send(new{kind="native-ready",session=current,name="guia de vídeo do PLAYSCREEN"});
         // Drain stderr immediately to prevent a blocked native process.
         var errors=processCapture.StandardError.ReadToEndAsync();

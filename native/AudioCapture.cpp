@@ -48,17 +48,21 @@ int wmain(int argc,wchar_t** argv) {
     WAVEFORMATEX format{};format.wFormatTag=WAVE_FORMAT_PCM;format.nChannels=2;
     format.nSamplesPerSec=48000;format.wBitsPerSample=16;format.nBlockAlign=4;
     format.nAvgBytesPerSec=192000;
-    hr=client->Initialize(AUDCLNT_SHAREMODE_SHARED,AUDCLNT_STREAMFLAGS_LOOPBACK,200000,0,&format,nullptr);
+    hr=client->Initialize(AUDCLNT_SHAREMODE_SHARED,AUDCLNT_STREAMFLAGS_LOOPBACK | AUDCLNT_STREAMFLAGS_EVENTCALLBACK | AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,200000,0,&format,nullptr);
     if (FAILED(Check(hr))) return 6;
     ComPtr<IAudioCaptureClient> capture;
     if (FAILED(Check(client->GetService(IID_PPV_ARGS(&capture))))) return 7;
+    HANDLE audioEvent=CreateEventW(nullptr,FALSE,FALSE,nullptr);
+    if(!audioEvent || FAILED(Check(client->SetEventHandle(audioEvent))))return 8;
     HANDLE target=OpenProcess(SYNCHRONIZE,FALSE,pid);
     if (!target) { fputs("Nao foi possivel abrir o jogo selecionado.\n",stderr);return 8; }
     _setmode(_fileno(stdout),_O_BINARY);setvbuf(stdout,nullptr,_IONBF,0);
     if (FAILED(Check(client->Start()))) { CloseHandle(target);return 9; }
+    fputs("READY\n",stderr);fflush(stderr);
     std::vector<BYTE> silence;
     bool running=true;
     while(running && WaitForSingleObject(target,0)==WAIT_TIMEOUT) {
+        WaitForSingleObject(audioEvent,20);
         UINT32 packet=0;
         if (FAILED(Check(capture->GetNextPacketSize(&packet)))) break;
         while(packet) {
@@ -71,8 +75,8 @@ int wmain(int argc,wchar_t** argv) {
             if(written!=bytes) { running=false;break; }
             if (FAILED(Check(capture->GetNextPacketSize(&packet)))) { running=false;break; }
         }
-        Sleep(5);
+
     }
-    client->Stop();CloseHandle(target);
+    client->Stop();CloseHandle(target);CloseHandle(audioEvent);
     return running?0:10;
 }
